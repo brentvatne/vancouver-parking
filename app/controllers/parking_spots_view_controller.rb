@@ -1,0 +1,3 @@
+class ParkingSpotsViewController < UITableViewController
+
+end
