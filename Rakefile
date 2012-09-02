@@ -6,4 +6,5 @@ require 'bubble-wrap/http'
 
 Motion::Project::App.setup do |app|
   app.name = 'Park'
+  app.frameworks += ['CoreLocation', 'MapKit']
 end

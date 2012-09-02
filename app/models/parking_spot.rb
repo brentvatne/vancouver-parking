@@ -5,7 +5,7 @@ class ParkingSpot
                 :usedCapacity
 
   def to_s
-    "(#{remainingFreeSpaces}) - #{name} at #{coordinates}"
+    "(#{remainingFreeSpaces}) - #{name}"
   end
 
   def remainingFreeSpaces
@@ -26,5 +26,17 @@ class ParkingSpot
     end
 
     newParkingSpot
+  end
+
+  # Map kit hooks
+  def title
+    name
+  end
+
+  def coordinate
+    c = CLLocationCoordinate2D.new
+    c.longitude = coordinates[0]
+    c.latitude  = coordinates[1]
+    c
   end
 end

@@ -13,34 +13,37 @@ class ParkingSpotsListController < UITableViewController
   def initializeTableView
     @table = UITableView.alloc.initWithFrame(view.bounds)
     @table.dataSource = self
+    @table.delegate   = self
 
     view.addSubview @table
   end
 
   def fetchParkingSpots
     Api::Car2Go.fakeFetchParkingSpots do |success, parkingSpots|
-      @data = parkingSpots.select(&:hasFreeSpace?).map(&:to_s)
-      puts "LOADED DATA"
+      @data = parkingSpots.select(&:hasFreeSpace?)
       @table.reloadData
     end
   end
 
   # UITableView Hooks
   def reuseIdentifier
-    @reuseIdentifier ||= "CELL_IDENTIFIER"
+    @reuseIdentifier ||= 'A'
   end
 
   # Return the UITableViewCell for the row
   def tableView(tableView, cellForRowAtIndexPath: indexPath)
     cell = tableView.dequeueReusableCellWithIdentifier(reuseIdentifier) || begin
       UITableViewCell.alloc.initWithStyle(
-        UITableViewCellStyleDefault,
+        UITableViewCellStyleSubtitle,
         reuseIdentifier: @reuseIdentifier
       )
     end
 
     # Put your data in the cell
-    cell.textLabel.text = @data[indexPath.row]
+    parkingSpot = @data[indexPath.row]
+    cell.textLabel.lineBreakMode = UILineBreakModeWordWrap
+    cell.textLabel.text = parkingSpot.name.gsub('Easy Park lot, ','')[0..30] + "..."
+    cell.detailTextLabel.text = "#{parkingSpot.remainingFreeSpaces} of #{parkingSpot.totalCapacity} spaces are empty"
     cell
   end
 
@@ -55,7 +58,7 @@ class ParkingSpotsListController < UITableViewController
 
   # UINavigationController Hooks
   def title
-    'Parking Spots'
+    'Available Parking Spots'
   end
 
   # UITabBarController Hooks

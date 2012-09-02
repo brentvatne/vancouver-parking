@@ -1,16 +1,28 @@
 class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    window.rootViewController = tabBarController
+    window.rootViewController = navigationController
+    window.makeKeyAndVisible
+    window.rootViewController.wantsFullScreenLayout = true
     true
   end
 
   def window
-    return @window unless @window.nil?
+    @window ||=
+      UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+  end
 
-    @window = UIWindow.alloc.initWithFrame UIScreen.mainScreen.bounds
-    @window.makeKeyAndVisible
+  def navigationController
+    @navigationController ||=
+      UINavigationController.alloc.initWithRootViewController(tabBarController)
+  end
 
-    @window
+  def tabBarController
+    return @tabBarController unless @tabBarController.nil?
+
+    @tabBarController = UITabBarController.alloc.initWithNibName(nil, bundle: nil)
+    @tabBarController.viewControllers = [mapController, listController]
+
+    @tabBarController
   end
 
   def listController
@@ -21,14 +33,5 @@ class AppDelegate
 
   def mapController
     @mapController ||= ParkingSpotsMapController.alloc.init
-  end
-
-  def tabBarController
-    return @tabBarController unless @tabBarController.nil?
-
-    @tabBarController = UITabBarController.alloc.initWithNibName(nil, bundle: nil)
-    @tabBarController.viewControllers = [mapController, listController]
-
-    @tabBarController
   end
 end
