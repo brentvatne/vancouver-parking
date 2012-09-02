@@ -1,5 +1,5 @@
 class ParkingSpotsListController < UIViewController
-  attr_accessor :table, :data
+  attr_accessor :table, :data, :locationManager
 
   def init
     initWithNibName(nil, bundle: nil)
@@ -8,14 +8,31 @@ class ParkingSpotsListController < UIViewController
   def viewDidLoad
     initializeTableView
     styleNavigationBar
+    startTrackingLocation
     fetchParkingSpots
+  end
+
+  def startTrackingLocation
+    @locationManager ||= CLLocationManager.alloc.init.tap do |l|
+      l.desiredAccuracy = KCLLocationAccuracyNearestTenMeters
+      l.startUpdatingLocation
+      l.delegate = self
+   end
+  end
+
+  def currentLocation
+    locationManager.location
+  end
+
+  def distanceFromCurrentLocation(otherLocation)
+    other = CLLocation.alloc.initWithLatitude(otherLocation.latitude, longitude: otherLocation.longitude)
+    p currentLocation.coordinate
+    p other.coordinate
+    currentLocation.distanceFromLocation(other) / 1000
   end
 
   def styleNavigationBar
     navigationController.navigationBar.tintColor = UIColor.blackColor
-    # p navigationBar
-    # p navigationBar.tintColor
-    # navigationBar.tintColor = UIColor.blackColor
   end
 
   def initializeTableView
@@ -53,7 +70,8 @@ class ParkingSpotsListController < UIViewController
     parkingSpot = @data[indexPath.row]
     cell.textLabel.lineBreakMode = UILineBreakModeWordWrap
     cell.textLabel.text = parkingSpot.name.gsub('Easy Park lot, ','')[0..25] + "..."
-    cell.detailTextLabel.text = "#{parkingSpot.remainingFreeSpaces} spaces available"
+    cell.detailTextLabel.text = "#{parkingSpot.remainingFreeSpaces} spaces available, " +
+                                "#{distanceFromCurrentLocation(parkingSpot.coordinate)}km away"
     cell
   end
 
