@@ -7,7 +7,15 @@ class ParkingSpotsListController < UIViewController
 
   def viewDidLoad
     initializeTableView
+    styleNavigationBar
     fetchParkingSpots
+  end
+
+  def styleNavigationBar
+    navigationController.navigationBar.tintColor = UIColor.blackColor
+    # p navigationBar
+    # p navigationBar.tintColor
+    # navigationBar.tintColor = UIColor.blackColor
   end
 
   def initializeTableView
@@ -39,11 +47,13 @@ class ParkingSpotsListController < UIViewController
       )
     end
 
+    cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton
+
     # Put your data in the cell
     parkingSpot = @data[indexPath.row]
     cell.textLabel.lineBreakMode = UILineBreakModeWordWrap
-    cell.textLabel.text = parkingSpot.name.gsub('Easy Park lot, ','')[0..30] + "..."
-    cell.detailTextLabel.text = "#{parkingSpot.remainingFreeSpaces} of #{parkingSpot.totalCapacity} spaces are empty"
+    cell.textLabel.text = parkingSpot.name.gsub('Easy Park lot, ','')[0..25] + "..."
+    cell.detailTextLabel.text = "#{parkingSpot.remainingFreeSpaces} spaces available"
     cell
   end
 

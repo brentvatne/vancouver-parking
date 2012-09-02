@@ -11,13 +11,13 @@ module Api
 
       # Fake implementation for testing
       # Does not make an api call, just uses data from this source file
-      def fakeFetchParkingSpots(&block)
+      def fetchParkingSpots(&block)
         block.call(true, parkingSpotsFromJSON(sampleData))
       end
 
       # Real implementation
       # Returns an Array of ParkingSpot instances
-      def fetchParkingSpots(&block)
+      def fakeFetchParkingSpots(&block)
         BubbleWrap::HTTP.get(endpoint) do |response|
           if response.ok?
             block.call(true, parkingSpotsFromJSON(response.body))
