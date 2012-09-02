@@ -1,4 +1,4 @@
-class ParkingSpotsMapController < UITableViewController
+class ParkingSpotsMapController < UIViewController
   def init
     self
   end
@@ -24,7 +24,7 @@ class ParkingSpotsMapController < UITableViewController
   end
 
   def fetchParkingSpots
-    Api::Car2Go.fakeFetchParkingSpots do |success, parkingSpots|
+    Api::Car2Go.fetchParkingSpots do |success, parkingSpots|
       @parkingSpots = parkingSpots.select(&:hasFreeSpace?)
       refreshMap
     end

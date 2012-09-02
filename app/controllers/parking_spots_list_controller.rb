@@ -1,4 +1,4 @@
-class ParkingSpotsListController < UITableViewController
+class ParkingSpotsListController < UIViewController
   attr_accessor :table, :data
 
   def init
@@ -19,7 +19,7 @@ class ParkingSpotsListController < UITableViewController
   end
 
   def fetchParkingSpots
-    Api::Car2Go.fakeFetchParkingSpots do |success, parkingSpots|
+    Api::Car2Go.fetchParkingSpots do |success, parkingSpots|
       @data = parkingSpots.select(&:hasFreeSpace?)
       @table.reloadData
     end
