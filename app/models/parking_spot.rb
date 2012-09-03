@@ -39,4 +39,12 @@ class ParkingSpot
     c.latitude  = coordinates[1]
     c
   end
+
+  def location
+    CLLocation.alloc.initWithLatitude(coordinate.latitude, longitude: coordinate.longitude)
+  end
+
+  def metersFromLocation(otherLocation)
+    location.distanceFromLocation(otherLocation) / 1000
+  end
 end

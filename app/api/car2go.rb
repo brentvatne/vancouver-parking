@@ -11,13 +11,13 @@ module Api
 
       # Fake implementation for testing
       # Does not make an api call, just uses data from this source file
-      def fetchParkingSpots(&block)
+      def fakeFetchParkingSpots(&block)
         block.call(true, parkingSpotsFromJSON(sampleData))
       end
 
       # Real implementation
       # Returns an Array of ParkingSpot instances
-      def fakeFetchParkingSpots(&block)
+      def fetchParkingSpots(&block)
         BubbleWrap::HTTP.get(endpoint) do |response|
           if response.ok?
             block.call(true, parkingSpotsFromJSON(response.body))
@@ -39,7 +39,7 @@ module Api
       def sampleData
         @sampleData ||= <<-eos
           {"placemarks":[
-            {"chargingPole":false,"coordinates":[-123.13092,49.3786,0],"name":"1100 The Castings, Easy Park lot, North of 6th Ave","totalCapacity":2,"usedCapacity":0},
+            {"chargingPole":false,"coordinates":[-123.13092,39.3786,0],"name":"1100 The Castings, Easy Park lot, North of 6th Ave","totalCapacity":2,"usedCapacity":0},
             {"chargingPole":false,"coordinates":[-123.115974,49.26637,0],"name":"595 West 6th Ave, Easy Park lot, West of Cambie St (Olympic Village SkyTrain)","totalCapacity":2,"usedCapacity":0},
             {"chargingPole":false,"coordinates":[-123.100266,49.272594,0],"name":"1500 Main St, Easy Park lot, (Main Street SkyTrain)","totalCapacity":4,"usedCapacity":0},
             {"chargingPole":false,"coordinates":[-123.111824,49.280186,0],"name":"688 Cambie St, Easy Park lot, North of Georgia","totalCapacity":6,"usedCapacity":0},

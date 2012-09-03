@@ -1,5 +1,5 @@
-class ParkingSpotsListController < UIViewController
-  attr_accessor :table, :data, :locationManager
+class ParkingSpotsListController < UITableViewController
+  attr_accessor :data, :locationManager
 
   def init
     initWithNibName(nil, bundle: nil)
@@ -7,7 +7,6 @@ class ParkingSpotsListController < UIViewController
 
   def viewDidLoad
     initializeTableView
-    styleNavigationBar
     startTrackingLocation
     fetchParkingSpots
   end
@@ -24,34 +23,24 @@ class ParkingSpotsListController < UIViewController
     locationManager.location
   end
 
-  def distanceFromCurrentLocation(otherLocation)
-    other = CLLocation.alloc.initWithLatitude(otherLocation.latitude, longitude: otherLocation.longitude)
-    p currentLocation.coordinate
-    p other.coordinate
-    currentLocation.distanceFromLocation(other) / 1000
-  end
-
-  def styleNavigationBar
-    navigationController.navigationBar.tintColor = UIColor.blackColor
-  end
-
   def viewWillAppear(animated)
     navigationController.setNavigationBarHidden(false, animated:true)
     tabBarController.title = title
   end
 
   def initializeTableView
-    @table = UITableView.alloc.initWithFrame(view.bounds)
-    @table.dataSource = self
-    @table.delegate   = self
-
-    view.addSubview @table
+    view.frame      = tabBarController.view.bounds
+    view.dataSource = self
+    view.delegate   = self
   end
 
   def fetchParkingSpots
     Api::Car2Go.fetchParkingSpots do |success, parkingSpots|
       @data = parkingSpots.select(&:hasFreeSpace?)
-      @table.reloadData
+      @data.sort! { |a, b|
+        a.metersFromLocation(currentLocation) <=> b.metersFromLocation(currentLocation)
+      }
+      view.reloadData
     end
   end
 
@@ -75,15 +64,20 @@ class ParkingSpotsListController < UIViewController
     parkingSpot = @data[indexPath.row]
     cell.textLabel.lineBreakMode = UILineBreakModeWordWrap
     cell.textLabel.text = parkingSpot.name.gsub('Easy Park lot, ','')[0..25] + "..."
-    distance = distanceFromCurrentLocation(parkingSpot.coordinate)
+
+    distance = parkingSpot.metersFromLocation(currentLocation)
     if distance > 100
       distanceText = 'really far away'
     else
-      distanceText = "#{distance.floor}km away"
+      distanceText = "#{roundToTwoPlaces(distance)}km away"
     end
 
     cell.detailTextLabel.text = "#{parkingSpot.remainingFreeSpaces} spaces available, #{distanceText}"
     cell
+  end
+
+  def roundToTwoPlaces(number)
+    (number * 100).floor.to_s.insert(-3, '.')
   end
 
   # Return the number of rows

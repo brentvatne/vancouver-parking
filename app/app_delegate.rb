@@ -7,13 +7,16 @@ class AppDelegate
   end
 
   def window
-    @window ||=
-      UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+    @window ||= UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
   end
 
   def navigationController
-    @navigationController ||=
-      UINavigationController.alloc.initWithRootViewController(tabBarController)
+    return @navigationController unless @navigationController.nil?
+
+    @navigationController = UINavigationController.alloc.initWithRootViewController(tabBarController)
+    @navigationController.navigationBar.tintColor = UIColor.blackColor
+
+    @navigationController
   end
 
   def tabBarController
