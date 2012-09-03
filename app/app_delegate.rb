@@ -20,18 +20,20 @@ class AppDelegate
     return @tabBarController unless @tabBarController.nil?
 
     @tabBarController = UITabBarController.alloc.initWithNibName(nil, bundle: nil)
-    @tabBarController.viewControllers = [mapController, listController]
+    @tabBarController.viewControllers = [mapController, listController, settingsController]
 
     @tabBarController
   end
 
-  def listController
-    @listController ||= UINavigationController.alloc.initWithRootViewController(
-      ParkingSpotsListController.alloc.init
-    )
-  end
-
   def mapController
     @mapController ||= ParkingSpotsMapController.alloc.init
+  end
+
+  def listController
+    @listController ||= ParkingSpotsListController.alloc.init
+  end
+
+  def settingsController
+    @settingsController ||= SettingsController.alloc.init
   end
 end

@@ -35,6 +35,11 @@ class ParkingSpotsListController < UIViewController
     navigationController.navigationBar.tintColor = UIColor.blackColor
   end
 
+  def viewWillAppear(animated)
+    navigationController.setNavigationBarHidden(false, animated:true)
+    tabBarController.title = title
+  end
+
   def initializeTableView
     @table = UITableView.alloc.initWithFrame(view.bounds)
     @table.dataSource = self
@@ -70,8 +75,14 @@ class ParkingSpotsListController < UIViewController
     parkingSpot = @data[indexPath.row]
     cell.textLabel.lineBreakMode = UILineBreakModeWordWrap
     cell.textLabel.text = parkingSpot.name.gsub('Easy Park lot, ','')[0..25] + "..."
-    cell.detailTextLabel.text = "#{parkingSpot.remainingFreeSpaces} spaces available, " +
-                                "#{distanceFromCurrentLocation(parkingSpot.coordinate)}km away"
+    distance = distanceFromCurrentLocation(parkingSpot.coordinate)
+    if distance > 100
+      distanceText = 'really far away'
+    else
+      distanceText = "#{distance.floor}km away"
+    end
+
+    cell.detailTextLabel.text = "#{parkingSpot.remainingFreeSpaces} spaces available, #{distanceText}"
     cell
   end
 
@@ -92,7 +103,7 @@ class ParkingSpotsListController < UIViewController
   # UITabBarController Hooks
   def tabBarItem
     @tabBarItem ||= UITabBarItem.alloc.initWithTitle(
-      'List', image:UIImage.imageNamed('icons/list.png'), tag:1
+      'Sorted List', image:UIImage.imageNamed('icons/list.png'), tag:1
     )
   end
 end
