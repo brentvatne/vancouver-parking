@@ -11,20 +11,8 @@ class ParkingSpotsListController < UITableViewController
     fetchParkingSpots
   end
 
-  def startTrackingLocation
-    @locationManager ||= CLLocationManager.alloc.init.tap do |l|
-      l.desiredAccuracy = KCLLocationAccuracyNearestTenMeters
-      l.startUpdatingLocation
-      l.delegate = self
-   end
-  end
-
-  def currentLocation
-    locationManager.location
-  end
-
   def viewWillAppear(animated)
-    navigationController.setNavigationBarHidden(false, animated:true)
+    navigationController.setNavigationBarHidden(false, animated:false)
     tabBarController.title = title
   end
 
@@ -36,10 +24,7 @@ class ParkingSpotsListController < UITableViewController
 
   def fetchParkingSpots
     Api::Car2Go.fetchParkingSpots do |success, parkingSpots|
-      @data = parkingSpots.select(&:hasFreeSpace?)
-      @data.sort! { |a, b|
-        a.metersFromLocation(currentLocation) <=> b.metersFromLocation(currentLocation)
-      }
+      @data = parkingSpots.hasFreeSpace.sortByDistanceFrom(currentLocation)
       view.reloadData
     end
   end
@@ -76,28 +61,42 @@ class ParkingSpotsListController < UITableViewController
     cell
   end
 
-  def roundToTwoPlaces(number)
-    (number * 100).floor.to_s.insert(-3, '.')
-  end
-
-  # Return the number of rows
+  # Used by the UITableView to determine the number of rows in the data set
   def tableView(tableView, numberOfRowsInSection: section)
-    if @data.nil?
-      0
-    else
-      @data.count
-    end
+    if @data.nil? then 0 else @data.count end
   end
 
   # UINavigationController Hooks
+  # Displayed in the UINavigationController title bar
   def title
     'Available Parking Spots'
   end
 
   # UITabBarController Hooks
+  # The text and icon to use in the UITabBar
   def tabBarItem
     @tabBarItem ||= UITabBarItem.alloc.initWithTitle(
       'Sorted List', image:UIImage.imageNamed('icons/list.png'), tag:1
     )
+  end
+
+  # To be refactored
+  # Not sure how to properly do this with Rubymotion so here's a quick hack
+  def roundToTwoPlaces(number)
+    (number * 100).floor.to_s.insert(-3, '.')
+  end
+
+  # The location should be tracked on some shared object between the map and list
+  # Maybe there is a way to add an object like this to UIApplication.sharedApplication?
+  def startTrackingLocation
+    @locationManager ||= CLLocationManager.alloc.init.tap do |locationManager|
+      locationManager.desiredAccuracy = KCLLocationAccuracyNearestTenMeters
+      locationManager.startUpdatingLocation
+      locationManager.delegate = self
+   end
+  end
+
+  def currentLocation
+    locationManager.location
   end
 end

@@ -1,15 +1,11 @@
 class ParkingSpotsMapController < UIViewController
-  def init
-    self
-  end
+  attr_reader :parkingSpots
+
+  def init; self; end
 
   def loadView
     self.view = MKMapView.alloc.init
     view.delegate = self
-  end
-
-  def originalViewRegion
-    MKCoordinateRegionMake(CLLocationCoordinate2D.new(49.27, -123.12), MKCoordinateSpanMake(0.1, 0.1))
   end
 
   def viewDidLoad
@@ -20,12 +16,17 @@ class ParkingSpotsMapController < UIViewController
   end
 
   def viewWillAppear(animated)
-    navigationController.setNavigationBarHidden(true, animated:true)
+    navigationController.setNavigationBarHidden(true, animated:false)
+  end
+
+
+  def originalViewRegion
+    MKCoordinateRegionMake(CLLocationCoordinate2D.new(49.27, -123.12), MKCoordinateSpanMake(0.1, 0.1))
   end
 
   def fetchParkingSpots
     Api::Car2Go.fetchParkingSpots do |success, parkingSpots|
-      @parkingSpots = parkingSpots.select(&:hasFreeSpace?)
+      @parkingSpots = parkingSpots.hasFreeSpace
       refreshMap
     end
   end

@@ -11,13 +11,13 @@ module Api
 
       # Fake implementation for testing
       # Does not make an api call, just uses data from this source file
-      def fakeFetchParkingSpots(&block)
+      def fetchParkingSpots(&block)
         block.call(true, parkingSpotsFromJSON(sampleData))
       end
 
       # Real implementation
       # Returns an Array of ParkingSpot instances
-      def fetchParkingSpots(&block)
+      def fakeFetchParkingSpots(&block)
         BubbleWrap::HTTP.get(endpoint) do |response|
           if response.ok?
             block.call(true, parkingSpotsFromJSON(response.body))
@@ -27,11 +27,8 @@ module Api
         end
       end
 
-      # Converts a properly formatted JSON string to an Array of Parking Spot objects
-      def parkingSpotsFromJSON(data)
-        BubbleWrap::JSON.parse(data)['placemarks'].map { |parkingSpotData|
-          ParkingSpot.fromJSON(parkingSpotData)
-        }
+      def parkingSpotsFromJSON(json)
+        ParkingSpots.fromJSON(BubbleWrap::JSON.parse(json)['placemarks'])
       end
 
       # Real data taken from the Car2Go API so I don't have to make a bunch of calls

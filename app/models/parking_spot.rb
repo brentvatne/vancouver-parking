@@ -4,18 +4,6 @@ class ParkingSpot
                 :totalCapacity,
                 :usedCapacity
 
-  def to_s
-    "(#{remainingFreeSpaces}) - #{name}"
-  end
-
-  def remainingFreeSpaces
-    totalCapacity - usedCapacity
-  end
-
-  def hasFreeSpace?
-    remainingFreeSpaces > 0
-  end
-
   def self.fromJSON(parsedJSONHash)
     newParkingSpot = new
 
@@ -28,23 +16,37 @@ class ParkingSpot
     newParkingSpot
   end
 
-  # Map kit hooks
-  def title
-    name
+  # Predicate methods
+  def remainingFreeSpaces
+    totalCapacity - usedCapacity
   end
 
-  def coordinate
-    c = CLLocationCoordinate2D.new
-    c.longitude = coordinates[0]
-    c.latitude  = coordinates[1]
-    c
+  def hasFreeSpace?
+    remainingFreeSpaces > 0
   end
 
+  # Returns a CCLocation object built from the coordinate.
   def location
-    CLLocation.alloc.initWithLatitude(coordinate.latitude, longitude: coordinate.longitude)
+    @location ||=
+      CLLocation.alloc.initWithLatitude(coordinate.latitude,
+                                        longitude: coordinate.longitude)
   end
 
+  # Uses the `location` to determine the distance from another location.
   def metersFromLocation(otherLocation)
     location.distanceFromLocation(otherLocation) / 1000
+  end
+
+
+  # Map kit hooks
+  # Used by MapKit as the title text when you click on the pin
+  def title; name; end
+
+  # Used by MapKit to place it on the map
+  def coordinate
+    CLLocationCoordinate2D.new.tap do |coord|
+      coord.longitude = coordinates[0]
+      coord.latitude  = coordinates[1]
+    end
   end
 end
