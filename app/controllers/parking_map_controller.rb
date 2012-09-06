@@ -1,4 +1,4 @@
-class ParkingSpotsMapController < UIViewController
+class ParkingMapController < UIViewController
   attr_reader :parkingSpots
 
   def init; self; end

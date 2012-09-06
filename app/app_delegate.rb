@@ -11,29 +11,21 @@ class AppDelegate
   end
 
   def navigationController
-    return @navigationController unless @navigationController.nil?
-
-    @navigationController = UINavigationController.alloc.initWithRootViewController(tabBarController)
-    @navigationController.navigationBar.tintColor = UIColor.blackColor
-
-    @navigationController
+    @navigationController ||= AppNavigationController.alloc.initWithRootViewController(tabBarController)
   end
 
   def tabBarController
-    return @tabBarController unless @tabBarController.nil?
-
-    @tabBarController = UITabBarController.alloc.initWithNibName(nil, bundle: nil)
-    @tabBarController.viewControllers = [mapController, listController, settingsController]
-
-    @tabBarController
+    @tabBarController ||= AppTabBarController.alloc.init.tap do |tabController|
+      tabController.viewControllers = [mapController, listController, settingsController]
+    end
   end
 
   def mapController
-    @mapController ||= ParkingSpotsMapController.alloc.init
+    @mapController ||= ParkingMapController.alloc.init
   end
 
   def listController
-    @listController ||= ParkingSpotsListController.alloc.init
+    @listController ||= ParkingListController.alloc.init
   end
 
   def settingsController

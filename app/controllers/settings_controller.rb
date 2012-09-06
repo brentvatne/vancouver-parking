@@ -4,7 +4,7 @@ class SettingsController < UIViewController
   end
 
   def viewWillAppear(animated)
-    navigationController.setNavigationBarHidden(false, animated:true)
+    navigationController.setNavigationBarHidden(false, animated:false)
     tabBarController.title = title
   end
 

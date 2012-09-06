@@ -1,4 +1,4 @@
-class ParkingSpotsListController < UITableViewController
+class ParkingListController < UITableViewController
   attr_accessor :data, :locationManager
 
   def init

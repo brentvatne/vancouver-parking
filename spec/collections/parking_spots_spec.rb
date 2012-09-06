@@ -1,0 +1,2 @@
+describe ParkingSpots do
+end
